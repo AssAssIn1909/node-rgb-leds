@@ -15,35 +15,36 @@ LED_INVERT     = False   # True to invert the signal (when using NPN transistor 
 LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 LED_STRIP      = ws.WS2811_STRIP_GRB   # Strip type and colour ordering
 
-print len(sys.argv)
-print sys.argv
-
-currentColors = [int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])]
-setColors = [int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6])]
-SPEED = 1
-
-def colorsChange(index):
-    if(setColors[index] - currentColors[index] > SPEED):
-        return currentColors[index] + SPEED
-    elif (currentColors[index] - setColors[index] > SPEED):
-        return currentColors[index] - SPEED
-    else:
-        return setColors[index]
-
-
 def colorWipe(strip, wait_ms=0):
     """Wipe color across display a pixel at a time."""
-    while (currentColors[0] != setColors[0] or currentColors[1] != setColors[1] or currentColors[2] != setColors[2]):
-        currentColors[0] = colorsChange(0)
-        currentColors[1] = colorsChange(1)
-        currentColors[2] = colorsChange(2)
-        for i in range(strip.numPixels()):
-            strip.setPixelColor(i, Color(currentColors[0], currentColors[1], currentColors[2]))
-        strip.show()
-        pixel = strip.getPixelColor(1)
-        time.sleep(500/1000)
+#    for i in range(strip.numPixels()):
+#        strip.setPixelColor(i, Color(currentColors[0], currentColors[1], currentColors[2]))
+    blue = Color(0x0, 0x0, 0xff)
+    red = Color(0xff, 0x0, 0x0)
+    black = Color(0x0, 0x0, 0x0)
+    rpm = 1
 
-    
+    while True:
+        print hex(strip.getPixelColor(2))
+        if(rpm < 20):
+            color = blue
+        elif rpm >= 20 and rpm < 28:
+            color = red
+        else:
+            
+            if(hex(strip.getPixelColor(2)) == '0xff0000'):
+                color = black
+            else:
+                color = red
+        for i in range(rpm):
+            strip.setPixelColor(i, color)
+        strip.show()
+
+        if(rpm <= 30):
+            rpm += 1
+        
+        print rpm
+        time.sleep(50/1000.0)
 
 if __name__ == '__main__':
     # Create NeoPixel object with appropriate configuration.
