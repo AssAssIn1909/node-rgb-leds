@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Leds</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <style>
+            .picker{
+                width: 147px;
+                margin: 0 auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="picker">
+            <input class="jscolor" onchange="update(this.jscolor)" value="000000">
+        </div>
+
+        <script src="jscolor.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+        <script>
+            let socket = io();
+            function update(jscolor){
+                var colors = [Math.round(jscolor.rgb[0]), Math.round(jscolor.rgb[1]),Math.round(jscolor.rgb[2])];
+                socket.emit('change', colors);
+            }
+        </script>
+    </body>
+</html>
