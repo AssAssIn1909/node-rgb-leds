@@ -36,7 +36,6 @@ io.on('connection', function(socket){
             currentColor = color;
 
             PythonShell.run('leds.py', options, function(err, result){
-                console.log("test2");
                 if(err) throw err;
                 else{
                     console.log(result);

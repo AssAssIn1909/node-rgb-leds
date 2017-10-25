@@ -1,5 +1,4 @@
 #!/usr/bin/python
-import time
 import sys
 
 from neopixel import *
@@ -15,33 +14,28 @@ LED_INVERT     = False   # True to invert the signal (when using NPN transistor 
 LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 LED_STRIP      = ws.WS2811_STRIP_GRB   # Strip type and colour ordering
 
-print len(sys.argv)
-print sys.argv
-
-currentColors = [int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])]
-setColors = [int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6])]
+CURRENT_COLOR = [int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])]
+SET_COLOR = [int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6])]
 SPEED = 1
 
-def colorsChange(index):
-    if(setColors[index] - currentColors[index] > SPEED):
-        return currentColors[index] + SPEED
-    elif (currentColors[index] - setColors[index] > SPEED):
-        return currentColors[index] - SPEED
-    else:
-        return setColors[index]
+def colors_change(index):
+    if SET_COLOR[index] - CURRENT_COLOR[index] > SPEED:
+        return CURRENT_COLOR[index] + SPEED
+    if CURRENT_COLOR[index] - SET_COLOR[index] > SPEED:
+        return CURRENT_COLOR[index] - SPEED
+    return SET_COLOR[index]
 
 
-def colorWipe(strip, wait_ms=0):
+def colorWipe(strip):
     """Wipe color across display a pixel at a time."""
-    while (currentColors[0] != setColors[0] or currentColors[1] != setColors[1] or currentColors[2] != setColors[2]):
-        currentColors[0] = colorsChange(0)
-        currentColors[1] = colorsChange(1)
-        currentColors[2] = colorsChange(2)
+    while (CURRENT_COLOR[0] != SET_COLOR[0] or CURRENT_COLOR[1] != SET_COLOR[1]
+           or CURRENT_COLOR[2] != SET_COLOR[2]):
+        CURRENT_COLOR[0] = colors_change(0)
+        CURRENT_COLOR[1] = colors_change(1)
+        CURRENT_COLOR[2] = colors_change(2)
         for i in range(strip.numPixels()):
-            strip.setPixelColor(i, Color(currentColors[0], currentColors[1], currentColors[2]))
+            strip.setPixelColor(i, Color(CURRENT_COLOR[0], CURRENT_COLOR[1], CURRENT_COLOR[2]))
         strip.show()
-        pixel = strip.getPixelColor(1)
-        time.sleep(500/1000)
 
     
 
@@ -51,7 +45,5 @@ if __name__ == '__main__':
     # Intialize the library (must be called once before other functions).
     strip.begin()
 
-    #currentColors = [int(hex(pixel[0])[2:4], 16), int(hex(pixel[0])[4:6], 16), int(hex(pixel[0])[6:8], 16)]
     colorWipe(strip)  # Red wipe
     print "Complete"
-
