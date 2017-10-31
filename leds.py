@@ -1,5 +1,4 @@
-#!/usr/bin/python
-import sys
+import sys, json
 
 from neopixel import *
 
@@ -14,33 +13,40 @@ LED_INVERT     = False   # True to invert the signal (when using NPN transistor 
 LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 LED_STRIP      = ws.WS2811_STRIP_GRB   # Strip type and colour ordering
 
-CURRENT_COLOR = [int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])]
-SET_COLOR = [int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6])]
 SPEED = 1
+CURRENT_COLOR = [0,0,0]
+SET_COLOR = [0,0,0]
 
-def colors_change(index):
-    if SET_COLOR[index] - CURRENT_COLOR[index] > SPEED:
-        return CURRENT_COLOR[index] + SPEED
-    if CURRENT_COLOR[index] - SET_COLOR[index] > SPEED:
-        return CURRENT_COLOR[index] - SPEED
-    return SET_COLOR[index]
+#Read data from stdin
+def read_in():
+    global CURRENT_COLOR
+    global SET_COLOR
+    lines = sys.stdin.readlines()
+    # Since our input would only be having one line, parse our JSON data from that
+    colors = json.loads(lines[0])
+    CURRENT_COLOR = colors[:3]
+    SET_COLOR = colors[3:6]
 
+def colors_change():
+    for index in range(len(CURRENT_COLOR)):
+        if SET_COLOR[index] - CURRENT_COLOR[index] > SPEED:
+            CURRENT_COLOR[index] = CURRENT_COLOR[index] + SPEED
+        elif CURRENT_COLOR[index] - SET_COLOR[index] > SPEED:
+            CURRENT_COLOR[index] = CURRENT_COLOR[index] - SPEED
+        else:
+            CURRENT_COLOR[index] = SET_COLOR[index]
 
 def colorWipe(strip):
-    """Wipe color across display a pixel at a time."""
+    read_in()
     while (CURRENT_COLOR[0] != SET_COLOR[0] or CURRENT_COLOR[1] != SET_COLOR[1]
            or CURRENT_COLOR[2] != SET_COLOR[2]):
-        CURRENT_COLOR[0] = colors_change(0)
-        CURRENT_COLOR[1] = colors_change(1)
-        CURRENT_COLOR[2] = colors_change(2)
+        colors_change()
         for i in range(strip.numPixels()):
             strip.setPixelColor(i, Color(CURRENT_COLOR[0], CURRENT_COLOR[1], CURRENT_COLOR[2]))
         strip.show()
 
-    
-
+# Start process
 if __name__ == '__main__':
-    # Create NeoPixel object with appropriate configuration.
     strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, LED_STRIP)
     # Intialize the library (must be called once before other functions).
     strip.begin()
