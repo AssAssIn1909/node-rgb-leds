@@ -21,7 +21,7 @@ app.get('/jscolor.js', function(req, res){
 io.on('connection', function(socket){
     socket.on('change', function(color){
         if(!block){
-            var pyshell = new PythonShell('leds.py');
+            var pyshell = new PythonShell('/home/pi/node/leds.py');
             block = true;
             var newColor = currentColor;
             newColor.push(color[0], color[1], color[2])

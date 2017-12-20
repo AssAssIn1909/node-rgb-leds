@@ -3,7 +3,7 @@ import sys, json
 from neopixel import *
 
 # LED strip configuration:
-LED_COUNT      = 28      # Number of LED pixels.
+LED_COUNT      = 30      # Number of LED pixels.
 #LED_PIN        = 18      # GPIO pin connected to the pixels (18 uses PWM!).
 LED_PIN        = 10      # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
@@ -41,7 +41,7 @@ def colorWipe(strip):
     while (CURRENT_COLOR[0] != SET_COLOR[0] or CURRENT_COLOR[1] != SET_COLOR[1]
            or CURRENT_COLOR[2] != SET_COLOR[2]):
         colors_change()
-        for i in range(strip.numPixels()):
+        for i in range(23,30):
             strip.setPixelColor(i, Color(CURRENT_COLOR[0], CURRENT_COLOR[1], CURRENT_COLOR[2]))
         strip.show()
 
